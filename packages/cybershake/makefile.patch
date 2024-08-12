@@ -1,0 +1,30 @@
+diff --git a/AWP-ODC-SGT/src/makefile b/AWP-ODC-SGT/src/makefile
+index b7228a3..f3c0b27 100755
+--- a/AWP-ODC-SGT/src/makefile
++++ b/AWP-ODC-SGT/src/makefile
+@@ -1,14 +1,14 @@
+ FPMPI_POST_LINK_OPTS = -L/sw/xt5/fpmpi/1.1/cnl2.1_pgi7.2.5/lib -lfpmpi_papi -lpapi
+ FPMPI_INCLUDE_OPTS = -I/sw/xt5/fpmpi/1.1/cnl2.1_pgi7.2.5/include/
+ 
+-OFLAGS = ftn -O3 -fastsse -Mflushz -Mdaz -Mnontemporal -Mextend -Mfixed -tp istanbul-64 -Mnoprefetch -Mvect=sse -Mcache_align $(FPMPI_INCLUDE_OPTS) -c -o
+-PFLAGS = ftn -O3 -fastsse -Mflushz -Mdaz -Mnontemporal -Mextend -Mfixed -tp istanbul-64 -Mnoprefetch -Mvect=sse -Mcache_align $(FPMPI_INCLUDE_OPTS) -o
++OFLAGS = mpif90 -O3 -g -c -ffixed-line-length-132 -o
++PFLAGS = mpif90 -O3 -g -ffixed-line-length-132 -o
+ 
+ #OFLAGS = ftn -O2 -Mflushz -Mdaz -Mnontemporal -Mextend -Mfixed $(FPMPI_INCLUDE_OPTS) -c -o
+ #PFLAGS = ftn -O2 -Mflushz -Mdaz -Mnontemporal -Mextend -Mfixed $(FPMPI_INCLUDE_OPTS) -o
+ 
+ 
+-LIB = -L/usr/local/packages/iobuf -Liobuf 
++#LIB = -L/usr/local/packages/iobuf -Liobuf 
+ ##-L/usr/local/apps/mpitrace -lmpiprof 
+ BIN = ../bin
+ 
+@@ -20,6 +20,7 @@ OBJECTS = memory.o bound.o relax.o swap.o io.o source.o \
+ # By default, 32bit mpiio version is used
+ pmcl3d: $(OBJECTS)
+ 	$(PFLAGS) pmcl3d    $(OBJECTS)  $(LIB) 
++	cp pmcl3d ${BIN}/
+ 
+ pmcl3d.o: pmcl3d.f
+ 	$(OFLAGS) pmcl3d.o	pmcl3d.f

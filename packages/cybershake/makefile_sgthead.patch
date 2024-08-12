@@ -1,0 +1,13 @@
+diff --git a/SgtHead/src/makefile b/SgtHead/src/makefile
+index 98eef37..852d816 100644
+--- a/SgtHead/src/makefile
++++ b/SgtHead/src/makefile
+@@ -40,7 +40,7 @@ LF_FLAGS = -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+ ##### C options
+ 
+ # optimized
+-CFLAGS = -O3  -h msglevel_3 ${LF_FLAGS}
++CFLAGS = -O3 ${LF_FLAGS}
+ FFLAGS = -h msglevel_3 ${UFLAGS}
+ 
+ ##### make options
