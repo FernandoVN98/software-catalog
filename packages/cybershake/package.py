@@ -22,6 +22,31 @@
 
 from spack.package import *
 import os
+import requests
+import zipfile
+import shutil
+
+
+def download_repo(URL:str, folder:str):
+    r = requests.get(URL)
+    # Writing the zip
+    with open(f"{folder}.zip", "wb") as code:
+        code.write(r.content)
+        code.close()
+    # Creating a folder for the zip content
+    if not os.path.exists(folder):
+        os.mkdir(folder)
+    # Extracting the zip
+    with zipfile.ZipFile(f"{folder}.zip", "r") as zip_ref:
+        zip_ref.extractall(folder)
+    suffix = URL.split("/")[-1].replace(".zip", "", 1)
+    repo_name = URL.split("/")[4]
+    # Moving the file to parent
+    for filename in os.listdir(os.path.join(folder, f'{repo_name}-{suffix}')):
+        shutil.move(os.path.join(folder, f'{repo_name}-{suffix}', filename), os.path.join(folder, filename))
+    # Deleting unnecessary files
+    shutil.rmtree(f"{folder}/{repo_name}-{suffix}")
+    os.remove(f"{folder}.zip")
 
 
 class Cybershake(Package):
@@ -36,6 +61,7 @@ class Cybershake(Package):
     # maintainers("github_user1", "github_user2")
 
     version("22_12_v2", sha256="6b5d73addd9713b61b52790381db9d284b42fc62b9135d17cd5fd0c0980ab0be")
+    download_repo("https://github.com/Ecogenomics/BamM/archive/refs/heads/master.zip", "/libcfu")
 
 
     patch("makefile.patch")
@@ -43,11 +69,23 @@ class Cybershake(Package):
     patch("directsynth.patch")
 
     # FIXME: Add dependencies if required.
-    depends_on("openmpi")
+    depends_on("openmpi", type="run")
+    depends_on("fftw", type="run")
+    depends_on("memcached", type="run")
+    depends_on("pkg-config", type="run")
+    depends_on("binutils", type="run")
 
     def install(self, spec, prefix):
         # FIXME: Unknown build system
         mkdirp(self.prefix.bin)
+        actual_dir=os.getcwd()
+        os.system("chmod 755 /libcfu/c/configure")
+        os.system("chmod 755 /libcfu/c/autogen.sh")
+        os.chdir('/libcfu/c/libcfu-0.03')
+        os.system("/libcfu/c/autogen.sh")
+        os.system('/libcfu/c/configure')
+        os.system('make install')#'cd ./libcfu-0.03 && make install')
+        os.chdir(actual_dir)
         with open("install.sh", "w") as f:
             f.write("#!/bin/sh\n"
             "cd ./AWP-ODC-SGT\n"
@@ -97,15 +135,28 @@ class Cybershake(Package):
         #    "https://b2drop.bsc.es/index.php/s/SRWPNAkKL73oaRw/download",
         #    filename="BINOM.jar",
         #)
-        os.system("chmod 755 ./install_directsynth.sh")
-        install(os.getcwd() + '/AWP-ODC-SGT/bin/pmcl3d', self.prefix.bin)
-        install_script = Executable('./install_sgthead.sh')
-        install_script()
-        install_script = Executable('./compile_rupgen.sh')
-        install_script()
-        install(os.getcwd() + '/RuptureCodes/RupGen-api-5.5.2/src/librupgen.a', self.prefix.bin)
-        install_script = Executable('./install_directsynth.sh')
-        install_script()
-        install(os.getcwd() + '/SgtHead/bin/*', self.prefix.bin)
-        install(os.getcwd() + '/DirectSynth/bin/*', self.prefix.bin)
+        #os.system("chmod 755 ./install_directsynth.sh")
+        #install(os.getcwd() + '/AWP-ODC-SGT/bin/pmcl3d', self.prefix.bin)
+        #install_script = Executable('./install_sgthead.sh')
+        #install_script()
+        #install_script = Executable('./compile_rupgen.sh')
+        #install_script()
+        #install(os.getcwd() + '/RuptureCodes/RupGen-api-5.5.2/src/librupgen.a', self.prefix.bin)
+        #install_script = Executable('./install_directsynth.sh')
+        #install_script()
+        #install(os.getcwd() + '/SgtHead/bin/*', self.prefix.bin)
+        #install(os.getcwd() + '/DirectSynth/bin/*', self.prefix.bin)
+
+    def setup_build_environment(self, env):
+        list_directory=self.prefix.split("/")[:-1]
+        directory_='/'.join(list_directory)
+        for (_,dirs,_) in os.walk(directory_, topdown=True):
+            direct_openmpi = [openmpidir for openmpidir in dirs if "openmpi" in openmpidir]
+            break
+        directory_ = directory_ + "/" + direct_openmpi[0] + "/bin"
+        env.set('MY_CC',  'gcc')
+        env.set('MY_MPICC', join_path(directory_, 'mpicc'))
+        env.set('MPICXX', join_path(directory_, 'mpic++'))
+        env.set('MY_FC', join_path(directory_, 'mpif77'))
+        env.set('MY_MPIFC', join_path(directory_, 'mpif90'))
 
