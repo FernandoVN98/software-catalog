@@ -1,8 +1,8 @@
 diff --git a/DirectSynth/src/makefile b/DirectSynth/src/makefile
-index fc65410..4566e4f 100644
+index fc65410..d20eada 100644
 --- a/DirectSynth/src/makefile
 +++ b/DirectSynth/src/makefile
-@@ -12,17 +12,16 @@ TEST_DURATION_OBJS = ${DURATION_OBJS} iofunc.o
+@@ -12,17 +12,15 @@ TEST_DURATION_OBJS = ${DURATION_OBJS} iofunc.o
  
  LF_FLAGS = -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
  
@@ -12,7 +12,6 @@ index fc65410..4566e4f 100644
 -CUR_RG_LIB = -L${BASE_DIR}/software/RuptureCodes/RupGen-api-5.5.2/lib
 -V5_4_2_RG_LIB = -L${BASE_DIR}/software/RuptureCodes/RupGen-api-5.4.2/lib
 -V3_3_1_RG_LIB = -L${BASE_DIR}/software/RuptureCodes/RupGen-api-3.3.1/lib
-+LIBCFU = /libcfu/c/libcfu-0.03
 +CUR_RG_LIB = -L${PWD}/../../RuptureCodes/RupGen-api-5.5.2/lib
 +V5_4_2_RG_LIB = -L${BASE_DIR}/RuptureCodes/RupGen-api-5.4.2/lib
 +V3_3_1_RG_LIB = -L${BASE_DIR}/RuptureCodes/RupGen-api-3.3.1/lib
@@ -21,10 +20,10 @@ index fc65410..4566e4f 100644
 -V5_4_2_RG_INC = -I${BASE_DIR}/software/RuptureCodes/RupGen-api-5.4.2/include
 -V3_3_1_RG_INC = -I${BASE_DIR}/software/RuptureCodes/RupGen-api-3.3.1/include
 -IFLAGS = -I${GETPAR}/include -I${BASE_DIR}/utils/libmemcached_1.0.18/include -I${LIBCFU}/include 
-+CUR_RG_INC = -I ${PWD}/../../RuptureCodes/RupGen-api-5.5.2/include
-+V5_4_2_RG_INC = -I ${BASE_DIR}/RuptureCodes/RupGen-api-5.4.2/include
-+V3_3_1_RG_INC = -I ${BASE_DIR}/RuptureCodes/RupGen-api-3.3.1/include
-+IFLAGS = -I ${GETPAR}/include -I ${BASE_DIR}/utils/libmemcached_1.0.18/include -I ${LIBCFU}/include 
++CUR_RG_INC = -I${PWD}/../../RuptureCodes/RupGen-api-5.5.2/include
++V5_4_2_RG_INC = -I${BASE_DIR}/RuptureCodes/RupGen-api-5.4.2/include
++V3_3_1_RG_INC = -I${BASE_DIR}/RuptureCodes/RupGen-api-3.3.1/include
++IFLAGS = -I${GETPAR}/include -I${BASE_DIR}/utils/libmemcached_1.0.18/include -I${LIBCFU} 
  
  #UFLAGS = -O3 -Wuninitialized -dynamic -g
  UFLAGS = -O3 -g 

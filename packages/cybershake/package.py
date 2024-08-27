@@ -78,12 +78,26 @@ class Cybershake(Package):
     def install(self, spec, prefix):
         # FIXME: Unknown build system
         mkdirp(self.prefix.bin)
+        list_directory=self.prefix.split("/")[:-1]
+        directory_='/'.join(list_directory)
+        for (_,dirs,_) in os.walk(directory_, topdown=True):
+            direct_openmpi = [openmpidir for openmpidir in dirs if "openmpi" in openmpidir]
+            break
+        directory_ = directory_ + "/" + direct_openmpi[0] + "/bin"
+        #download_repo("https://github.com/Ecogenomics/BamM/archive/refs/heads/master.zip", directory_)
         actual_dir=os.getcwd()
+        os.system('export PATH=' + str(directory_) + ':${PATH}')
         os.system("chmod 755 /libcfu/c/configure")
         os.system("chmod 755 /libcfu/c/autogen.sh")
-        os.chdir('/libcfu/c/libcfu-0.03')
+        #os.system('cp -r /libcfu/c/libcfu-0.03 /libcfu/c/libcfu-0.03/libcfu-0.03')
+        os.chdir('/libcfu/c')
+        #os.chdir(directory_+"/c")
         os.system("/libcfu/c/autogen.sh")
+        #os.system(directory_+"/c/autogen.sh")
         os.system('/libcfu/c/configure')
+        #os.system(directory_+"/c/configure")
+        os.chdir('/libcfu/c/libcfu-0.03')
+        #os.chdir(directory_+"/c/libcfu-0.03")
         os.system('make install')#'cd ./libcfu-0.03 && make install')
         os.chdir(actual_dir)
         with open("install.sh", "w") as f:
@@ -113,6 +127,8 @@ class Cybershake(Package):
             "make")
         f.close()
         os.system("chmod 755 ./install_sgthead.sh")
+        print("INSTALLLLLL", flush=True)
+        print(os.environ, flush=True)
         install_script = Executable('./install.sh')
         install_script()
         with open("compile_rupgen.sh", "w") as f:
@@ -135,17 +151,17 @@ class Cybershake(Package):
         #    "https://b2drop.bsc.es/index.php/s/SRWPNAkKL73oaRw/download",
         #    filename="BINOM.jar",
         #)
-        #os.system("chmod 755 ./install_directsynth.sh")
-        #install(os.getcwd() + '/AWP-ODC-SGT/bin/pmcl3d', self.prefix.bin)
-        #install_script = Executable('./install_sgthead.sh')
-        #install_script()
-        #install_script = Executable('./compile_rupgen.sh')
-        #install_script()
-        #install(os.getcwd() + '/RuptureCodes/RupGen-api-5.5.2/src/librupgen.a', self.prefix.bin)
-        #install_script = Executable('./install_directsynth.sh')
-        #install_script()
-        #install(os.getcwd() + '/SgtHead/bin/*', self.prefix.bin)
-        #install(os.getcwd() + '/DirectSynth/bin/*', self.prefix.bin)
+        os.system("chmod 755 ./install_directsynth.sh")
+        install(os.getcwd() + '/AWP-ODC-SGT/bin/pmcl3d', self.prefix.bin)
+        install_script = Executable('./install_sgthead.sh')
+        install_script()
+        install_script = Executable('./compile_rupgen.sh')
+        install_script()
+        install(os.getcwd() + '/RuptureCodes/RupGen-api-5.5.2/src/librupgen.a', self.prefix.bin)
+        install_script = Executable('./install_directsynth.sh')
+        install_script()
+        install(os.getcwd() + '/SgtHead/bin/*', self.prefix.bin)
+        install(os.getcwd() + '/DirectSynth/bin/*', self.prefix.bin)
 
     def setup_build_environment(self, env):
         list_directory=self.prefix.split("/")[:-1]
@@ -154,6 +170,7 @@ class Cybershake(Package):
             direct_openmpi = [openmpidir for openmpidir in dirs if "openmpi" in openmpidir]
             break
         directory_ = directory_ + "/" + direct_openmpi[0] + "/bin"
+        #env.set('PATH', directory_+":"+env.get('PATH'))
         env.set('MY_CC',  'gcc')
         env.set('MY_MPICC', join_path(directory_, 'mpicc'))
         env.set('MPICXX', join_path(directory_, 'mpic++'))
