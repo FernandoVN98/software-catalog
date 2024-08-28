@@ -22,31 +22,7 @@
 
 from spack.package import *
 import os
-import requests
-import zipfile
 import shutil
-
-
-def download_repo(URL:str, folder:str):
-    r = requests.get(URL)
-    # Writing the zip
-    with open(f"{folder}.zip", "wb") as code:
-        code.write(r.content)
-        code.close()
-    # Creating a folder for the zip content
-    if not os.path.exists(folder):
-        os.mkdir(folder)
-    # Extracting the zip
-    with zipfile.ZipFile(f"{folder}.zip", "r") as zip_ref:
-        zip_ref.extractall(folder)
-    suffix = URL.split("/")[-1].replace(".zip", "", 1)
-    repo_name = URL.split("/")[4]
-    # Moving the file to parent
-    for filename in os.listdir(os.path.join(folder, f'{repo_name}-{suffix}')):
-        shutil.move(os.path.join(folder, f'{repo_name}-{suffix}', filename), os.path.join(folder, filename))
-    # Deleting unnecessary files
-    shutil.rmtree(f"{folder}/{repo_name}-{suffix}")
-    os.remove(f"{folder}.zip")
 
 
 class Cybershake(Package):
@@ -61,7 +37,6 @@ class Cybershake(Package):
     # maintainers("github_user1", "github_user2")
 
     version("22_12_v2", sha256="6b5d73addd9713b61b52790381db9d284b42fc62b9135d17cd5fd0c0980ab0be")
-    download_repo("https://github.com/Ecogenomics/BamM/archive/refs/heads/master.zip", "/libcfu")
 
 
     patch("makefile.patch")
@@ -74,6 +49,7 @@ class Cybershake(Package):
     depends_on("memcached", type="run")
     depends_on("pkg-config", type="run")
     depends_on("binutils", type="run")
+    depends_on("libcfu")
 
     def install(self, spec, prefix):
         # FIXME: Unknown build system
@@ -85,21 +61,7 @@ class Cybershake(Package):
             break
         directory_ = directory_ + "/" + direct_openmpi[0] + "/bin"
         #download_repo("https://github.com/Ecogenomics/BamM/archive/refs/heads/master.zip", directory_)
-        actual_dir=os.getcwd()
         os.system('export PATH=' + str(directory_) + ':${PATH}')
-        os.system("chmod 755 /libcfu/c/configure")
-        os.system("chmod 755 /libcfu/c/autogen.sh")
-        #os.system('cp -r /libcfu/c/libcfu-0.03 /libcfu/c/libcfu-0.03/libcfu-0.03')
-        os.chdir('/libcfu/c')
-        #os.chdir(directory_+"/c")
-        os.system("/libcfu/c/autogen.sh")
-        #os.system(directory_+"/c/autogen.sh")
-        os.system('/libcfu/c/configure')
-        #os.system(directory_+"/c/configure")
-        os.chdir('/libcfu/c/libcfu-0.03')
-        #os.chdir(directory_+"/c/libcfu-0.03")
-        os.system('make install')#'cd ./libcfu-0.03 && make install')
-        os.chdir(actual_dir)
         with open("install.sh", "w") as f:
             f.write("#!/bin/sh\n"
             "cd ./AWP-ODC-SGT\n"
@@ -171,6 +133,7 @@ class Cybershake(Package):
             break
         directory_ = directory_ + "/" + direct_openmpi[0] + "/bin"
         #env.set('PATH', directory_+":"+env.get('PATH'))
+        env.set('LIBCFU', self.spec['libcfu'].prefix)
         env.set('MY_CC',  'gcc')
         env.set('MY_MPICC', join_path(directory_, 'mpicc'))
         env.set('MPICXX', join_path(directory_, 'mpic++'))
