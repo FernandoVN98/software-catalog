@@ -49,6 +49,8 @@ class Cybershake(Package):
     depends_on("memcached", type="run")
     depends_on("pkg-config", type="run")
     depends_on("binutils", type="run")
+    depends_on("py-pyyaml")
+    depends_on("py-geopy")
     depends_on("libcfu")
 
     def install(self, spec, prefix):
@@ -122,6 +124,7 @@ class Cybershake(Package):
         install(os.getcwd() + '/RuptureCodes/RupGen-api-5.5.2/src/librupgen.a', self.prefix.bin)
         install_script = Executable('./install_directsynth.sh')
         install_script()
+        install(os.getcwd() + '/PreSgt/bin/*', self.prefix.bin)
         install(os.getcwd() + '/SgtHead/bin/*', self.prefix.bin)
         install(os.getcwd() + '/DirectSynth/bin/*', self.prefix.bin)
 
