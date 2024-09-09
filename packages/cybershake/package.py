@@ -49,8 +49,6 @@ class Cybershake(Package):
     depends_on("memcached", type="run")
     depends_on("pkg-config", type="run")
     depends_on("binutils", type="run")
-    depends_on("py-pyyaml")
-    depends_on("py-geopy")
     depends_on("libcfu")
 
     def install(self, spec, prefix):
