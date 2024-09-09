@@ -49,6 +49,7 @@ class Cybershake(Package):
     depends_on("memcached", type="run")
     depends_on("pkg-config", type="run")
     depends_on("binutils", type="run")
+    depends_on("glibc@2.32:2.34")
     depends_on("libcfu")
 
     def install(self, spec, prefix):
