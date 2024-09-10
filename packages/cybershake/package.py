@@ -134,7 +134,7 @@ class Cybershake(Package):
             direct_openmpi = [openmpidir for openmpidir in dirs if "openmpi" in openmpidir]
             break
         directory_ = directory_ + "/" + direct_openmpi[0] + "/bin"
-        #env.set('PATH', directory_+":"+env.get('PATH'))
+        env.set('PATH', directory_+":"+env.get('PATH'))
         env.set('LIBCFU', self.spec['libcfu'].prefix)
         env.set('MY_CC',  'gcc')
         env.set('MY_MPICC', join_path(directory_, 'mpicc'))
